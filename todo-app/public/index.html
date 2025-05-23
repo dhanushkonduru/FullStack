@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>To-Do App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      background: #f4f4f4;
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px 0 0 4px;
+      outline: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      border: none;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+      border-radius: 0 4px 4px 0;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: white;
+      padding: 12px;
+      margin-bottom: 8px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>To-Do App</h1>
+
+  <form id="todoForm">
+    <input type="text" id="taskInput" placeholder="Enter new task" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <ul id="taskList"></ul>
+
+  <script>
+    const API_URL = 'http://localhost:3000/todos';
+
+    const form = document.getElementById('todoForm');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+
+    // Fetch and display tasks from DB
+    async function fetchTasks() {
+      taskList.innerHTML = '';
+      try {
+        const res = await fetch(API_URL);
+        const tasks = await res.json();
+
+        tasks.forEach(task => {
+          const li = document.createElement('li');
+          li.textContent = task.task;
+
+          const delBtn = document.createElement('button');
+          delBtn.textContent = 'Delete';
+          delBtn.className = 'delete-btn';
+          delBtn.onclick = () => deleteTask(task._id);
+
+          li.appendChild(delBtn);
+          taskList.appendChild(li);
+        });
+      } catch (err) {
+        console.error('Failed to fetch tasks:', err);
+      }
+    }
+
+    // Add new task
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+
+      const newTask = {
+        task: taskInput.value.trim()
+      };
+
+      if (!newTask.text) return;
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newTask)
+        });
+
+        if (res.ok) {
+          taskInput.value = '';
+          fetchTasks();
+        } else {
+          console.error('Failed to add task');
+        }
+      } catch (err) {
+        console.error('Error adding task:', err);
+      }
+    });
+
+    // Delete a task by id
+    async function deleteTask(id) {
+      try {
+        const res = await fetch(`${API_URL}/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (res.ok) {
+          fetchTasks();
+        } else {
+          console.error('Failed to delete task');
+        }
+      } catch (err) {
+        console.error('Error deleting task:', err);
+      }
+    }
+
+    // Initial fetch
+    fetchTasks();
+  </script>
+
+</body>
+</html>

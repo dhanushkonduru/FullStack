@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Onboarding</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f4f4f4;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 8px 0;
+      display: block;
+      width: 100%;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    button {
+      background: #28a745;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .student-list {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .student {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      float: right;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Student Onboarding</h1>
+
+  <form id="studentForm">
+    <input type="text" id="name" placeholder="Name" required />
+    <input type="text" id="rollNo" placeholder="Roll Number" required />
+    <input type="text" id="branch" placeholder="Branch" required />
+    <input type="number" id="year" placeholder="Year" required />
+    <button type="submit">Add Student</button>
+  </form>
+
+  <div class="student-list" id="studentList"></div>
+
+  <script>
+    const form = document.getElementById('studentForm');
+    const studentList = document.getElementById('studentList');
+
+    const API_URL = 'http://localhost:3000/students';
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const student = {
+        name: form.name.value,
+        rollNo: form.rollNo.value,
+        branch: form.branch.value,
+        year: form.year.value
+      };
+
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(student)
+      });
+
+      form.reset();
+      fetchStudents();
+    });
+
+    async function fetchStudents() {
+      studentList.innerHTML = '';
+      const res = await fetch(API_URL);
+      const students = await res.json();
+      students.forEach((student) => {
+        const div = document.createElement('div');
+        div.className = 'student';
+        div.innerHTML = `
+          <strong>${student.name}</strong> (${student.rollNo})<br>
+          ${student.branch} - Year ${student.year}
+          <button class="delete-btn" onclick="deleteStudent('${student._id}')">Delete</button>
+        `;
+        studentList.appendChild(div);
+      });
+    }
+
+    async function deleteStudent(id) {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      fetchStudents();
+    }
+
+    fetchStudents();
+  </script>
+</body>
+</html>

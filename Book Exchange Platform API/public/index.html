@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book Exchange Platform</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #f9fafb;
+      color: #333;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #222;
+      margin-bottom: 15px;
+    }
+    section {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border: 1.5px solid #ddd;
+      border-radius: 5px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    button:hover:not(:disabled) {
+      background-color: #0056b3;
+    }
+    button:disabled {
+      background-color: #8ab6ff;
+      cursor: not-allowed;
+    }
+    #booksList {
+      margin-top: 20px;
+    }
+    .book {
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 15px;
+      margin-bottom: 12px;
+      background: #fefefe;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .book strong {
+      color: #007bff;
+    }
+    .message {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    #loading {
+      text-align: center;
+      margin-top: 20px;
+      font-style: italic;
+      color: #666;
+    }
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      button {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>📚 Book Exchange Platform</h1>
+
+  <section aria-labelledby="add-book-title">
+    <h2 id="add-book-title">Add New Book</h2>
+    <form id="addBookForm" aria-describedby="addBookMessage">
+      <label for="title">Title <span aria-hidden="true">*</span></label>
+      <input type="text" id="title" name="title" placeholder="Enter book title" required />
+
+      <label for="author">Author</label>
+      <input type="text" id="author" name="author" placeholder="Enter author name" />
+
+      <label for="description">Description</label>
+      <textarea id="description" name="description" placeholder="Brief description"></textarea>
+
+      <label for="condition">Condition</label>
+      <select id="condition" name="condition">
+        <option value="New">New</option>
+        <option value="Good" selected>Good</option>
+        <option value="Fair">Fair</option>
+        <option value="Poor">Poor</option>
+      </select>
+
+      <label for="owner">Owner</label>
+      <input type="text" id="owner" name="owner" placeholder="Your name or username" />
+
+      <button type="submit">Add Book</button>
+      <div id="addBookMessage" role="alert" class="message" aria-live="polite" style="display:none;"></div>
+    </form>
+  </section>
+
+  <section aria-labelledby="books-list-title">
+    <h2 id="books-list-title">Books List</h2>
+    <button id="refreshBtn">🔄 Refresh List</button>
+    <div id="loading" aria-live="polite" style="display:none;">Loading books...</div>
+    <div id="booksList" aria-live="polite"></div>
+  </section>
+
+  <section aria-labelledby="update-book-title">
+    <h2 id="update-book-title">Update Book</h2>
+    <form id="updateBookForm" aria-describedby="updateBookMessage">
+      <label for="updateId">Book ID <span aria-hidden="true">*</span></label>
+      <input type="text" id="updateId" name="updateId" placeholder="Enter book ID to update" required />
+
+      <label for="updateTitle">Title</label>
+      <input type="text" id="updateTitle" name="updateTitle" placeholder="New title" />
+
+      <label for="updateAuthor">Author</label>
+      <input type="text" id="updateAuthor" name="updateAuthor" placeholder="New author" />
+
+      <label for="updateDescription">Description</label>
+      <textarea id="updateDescription" name="updateDescription" placeholder="New description"></textarea>
+
+      <label for="updateCondition">Condition</label>
+      <select id="updateCondition" name="updateCondition">
+        <option value="">-- Leave unchanged --</option>
+        <option value="New">New</option>
+        <option value="Good">Good</option>
+        <option value="Fair">Fair</option>
+        <option value="Poor">Poor</option>
+      </select>
+
+      <label for="updateOwner">Owner</label>
+      <input type="text" id="updateOwner" name="updateOwner" placeholder="New owner" />
+
+      <button type="submit">Update Book</button>
+      <div id="updateBookMessage" role="alert" class="message" aria-live="polite" style="display:none;"></div>
+    </form>
+  </section>
+
+  <section aria-labelledby="delete-book-title">
+    <h2 id="delete-book-title">Delete Book</h2>
+    <form id="deleteBookForm" aria-describedby="deleteBookMessage">
+      <label for="deleteId">Book ID <span aria-hidden="true">*</span></label>
+      <input type="text" id="deleteId" name="deleteId" placeholder="Enter book ID to delete" required />
+      <button type="submit">Delete Book</button>
+      <div id="deleteBookMessage" role="alert" class="message" aria-live="polite" style="display:none;"></div>
+    </form>
+  </section>
+
+  <script>
+    const apiUrl = '/api/books';
+
+    // Utility to show messages
+    function showMessage(id, message, isSuccess = true) {
+      const el = document.getElementById(id);
+      el.textContent = message;
+      el.className = isSuccess ? 'message success' : 'message error';
+      el.style.display = 'block';
+      setTimeout(() => {
+        el.style.display = 'none';
+      }, 4000);
+    }
+
+    // Show loading spinner
+    function setLoading(loading) {
+      document.getElementById('loading').style.display = loading ? 'block' : 'none';
+    }
+
+    async function fetchBooks() {
+      setLoading(true);
+      const list = document.getElementById('booksList');
+      list.innerHTML = '';
+      try {
+        const res = await fetch(apiUrl);
+        if (!res.ok) throw new Error('Failed to fetch books');
+        const books = await res.json();
+        if (books.length === 0) {
+          list.innerHTML = '<p>No books found.</p>';
+          setLoading(false);
+          return;
+        }
+        books.forEach(book => {
+          const div = document.createElement('div');
+          div.className = 'book';
+          div.innerHTML = `
+            <strong>ID:</strong> ${book._id} <br />
+            <strong>Title:</strong> ${book.title} <br />
+            <strong>Author:</strong> ${book.author || '-'} <br />
+            <strong>Description:</strong> ${book.description || '-'} <br />
+            <strong>Condition:</strong> ${book.condition} <br />
+            <strong>Owner:</strong> ${book.owner || '-'} <br />
+            <strong>Created At:</strong> ${new Date(book.createdAt).toLocaleString()}
+          `;
+          list.appendChild(div);
+        });
+      } catch (err) {
+        list.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    // Add book
+    document.getElementById('addBookForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const button = form.querySelector('button');
+      button.disabled = true;
+
+      const data = {
+        title: form.title.value.trim(),
+        author: form.author.value.trim(),
+        description: form.description.value.trim(),
+        condition: form.condition.value,
+        owner: form.owner.value.trim(),
+      };
+
+      if (!data.title) {
+        showMessage('addBookMessage', 'Title is required.', false);
+        button.disabled = false;
+        return;
+      }
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data),
+        });
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const result = await res.json();
+        showMessage('addBookMessage', `Book added successfully! ID: ${result._id}`);
+        form.reset();
+        fetchBooks();
+      } catch (err) {
+        showMessage('addBookMessage', `Failed to add book: ${err.message}`, false);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    // Update book
+    document.getElementById('updateBookForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const button = form.querySelector('button');
+      button.disabled = true;
+
+      const id = form.updateId.value.trim();
+      if (!id) {
+        showMessage('updateBookMessage', 'Book ID is required.', false);
+        button.disabled = false;
+        return;
+      }
+
+      // Build update data dynamically (only non-empty)
+      const updateData = {};
+      if (form.updateTitle.value.trim()) updateData.title = form.updateTitle.value.trim();
+      if (form.updateAuthor.value.trim()) updateData.author = form.updateAuthor.value.trim();
+      if (form.updateDescription.value.trim()) updateData.description = form.updateDescription.value.trim();
+      if (form.updateCondition.value) updateData.condition = form.updateCondition.value;
+      if (form.updateOwner.value.trim()) updateData.owner = form.updateOwner.value.trim();
+
+      if (Object.keys(updateData).length === 0) {
+        showMessage('updateBookMessage', 'At least one field to update is required.', false);
+        button.disabled = false;
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiUrl}/${id}`, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(updateData),
+        });
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        await res.json();
+        showMessage('updateBookMessage', 'Book updated successfully!');
+        form.reset();
+        fetchBooks();
+      } catch (err) {
+        showMessage('updateBookMessage', `Failed to update book: ${err.message}`, false);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    // Delete book
+    document.getElementById('deleteBookForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = e.target;
+      const button = form.querySelector('button');
+      button.disabled = true;
+
+      const id = form.deleteId.value.trim();
+      if (!id) {
+        showMessage('deleteBookMessage', 'Book ID is required.', false);
+        button.disabled = false;
+        return;
+      }
+
+      if (!confirm(`Are you sure you want to delete the book with ID: ${id}?`)) {
+        button.disabled = false;
+        return;
+      }
+
+      try {
+        const res = await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        await res.json();
+        showMessage('deleteBookMessage', 'Book deleted successfully!');
+        form.reset();
+        fetchBooks();
+      } catch (err) {
+        showMessage('deleteBookMessage', `Failed to delete book: ${err.message}`, false);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    // Refresh button
+    document.getElementById('refreshBtn').addEventListener('click', fetchBooks);
+
+    // Load books on page load
+    fetchBooks();
+  </script>
+</body>
+</html>

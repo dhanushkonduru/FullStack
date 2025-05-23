@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>School Management - Login / Signup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #74ebd5, #9face6);
+    padding: 40px;
+  }
+  .container {
+    background-color: white;
+    padding: 30px;
+    margin-bottom: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  label {
+    margin-top: 10px;
+    display: block;
+    font-weight: 600;
+    color: #555;
+  }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  .message {
+    margin-top: 15px;
+    font-weight: 600;
+    text-align: center;
+    color: red;
+  }
+  nav {
+    max-width: 400px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+  }
+  nav button {
+    width: auto;
+    margin: 0 5px;
+    padding: 8px 16px;
+    font-weight: normal;
+  }
+  #dashboardForms .container {
+    max-width: 500px;
+  }
+  #logoutBtn {
+    background-color: #dc3545;
+    margin: 20px auto;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <button id="showLogin">Login</button>
+  <button id="showSignup">Signup</button>
+</nav>
+
+<!-- Login Form -->
+<div class="container" id="loginForm">
+  <h2>Login</h2>
+  <form autocomplete="off">
+    <label for="loginEmail">Email</label>
+    <input type="email" id="loginEmail" name="email" required />
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword" name="password" required />
+    <button type="submit">Login</button>
+  </form>
+  <div class="message" id="loginMsg"></div>
+</div>
+
+<!-- Signup Form -->
+<div class="container" id="signupForm" style="display:none;">
+  <h2>Signup</h2>
+  <form autocomplete="off">
+    <label for="signupName">Name</label>
+    <input type="text" id="signupName" name="name" required />
+    <label for="signupEmail">Email</label>
+    <input type="email" id="signupEmail" name="email" required />
+    <label for="signupPassword">Password</label>
+    <input type="password" id="signupPassword" name="password" required />
+    <button type="submit">Signup</button>
+  </form>
+  <div class="message" id="signupMsg"></div>
+</div>
+
+<!-- Dashboard (hidden until login) -->
+<div id="dashboard" style="display:none; max-width:600px; margin:auto;">
+  <button id="logoutBtn">Logout</button>
+
+  <!-- Add Class -->
+  <div class="container">
+    <h2>Add New Class</h2>
+    <form id="classForm" autocomplete="off">
+      <label for="className">Class Name</label>
+      <input type="text" id="className" name="name" required />
+      <label for="branch">Branch</label>
+      <input type="text" id="branch" name="branch" required />
+      <label for="year">Year</label>
+      <input type="number" id="year" name="year" required />
+      <label for="teacher">Teacher ID</label>
+      <input type="text" id="teacher" name="teacher" required />
+      <label for="students">Student IDs (comma-separated)</label>
+      <input type="text" id="students" name="students" />
+      <button type="submit">Create Class</button>
+    </form>
+    <div class="message" id="classMsg"></div>
+  </div>
+
+  <!-- Add Student -->
+  <div class="container">
+    <h2>Add New Student</h2>
+    <form id="studentForm" autocomplete="off">
+      <label for="studentName">Name</label>
+      <input type="text" id="studentName" name="name" required />
+      <label for="rollNo">Roll Number</label>
+      <input type="text" id="rollNo" name="rollNo" required />
+      <label for="studentBranch">Branch</label>
+      <input type="text" id="studentBranch" name="branch" required />
+      <label for="studentYear">Year</label>
+      <input type="number" id="studentYear" name="year" required />
+      <button type="submit">Add Student</button>
+    </form>
+    <div class="message" id="studentMsg"></div>
+  </div>
+
+  <!-- Add Teacher -->
+  <div class="container">
+    <h2>Add New Teacher</h2>
+    <form id="teacherForm" autocomplete="off">
+      <label for="teacherName">Name</label>
+      <input type="text" id="teacherName" name="name" required />
+      <label for="teacherBranch">Branch</label>
+      <input type="text" id="teacherBranch" name="branch" required />
+      <label for="teacherYear">Year</label>
+      <input type="number" id="teacherYear" name="year" required />
+      <button type="submit">Add Teacher</button>
+    </form>
+    <div class="message" id="teacherMsg"></div>
+  </div>
+</div>
+
+<script>
+  // Show/hide forms on nav click
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const dashboard = document.getElementById('dashboard');
+  const showLoginBtn = document.getElementById('showLogin');
+  const showSignupBtn = document.getElementById('showSignup');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function showLogin() {
+    loginForm.style.display = 'block';
+    signupForm.style.display = 'none';
+    dashboard.style.display = 'none';
+  }
+  function showSignup() {
+    signupForm.style.display = 'block';
+    loginForm.style.display = 'none';
+    dashboard.style.display = 'none';
+  }
+  function showDashboard() {
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'none';
+    dashboard.style.display = 'block';
+  }
+
+  showLoginBtn.onclick = showLogin;
+  showSignupBtn.onclick = showSignup;
+
+  logoutBtn.onclick = () => {
+    localStorage.removeItem('token');
+    showLogin();
+  };
+
+  // Check if user is logged in on page load
+  if (localStorage.getItem('token')) {
+    showDashboard();
+  } else {
+    showLogin();
+  }
+
+  // POST helper with token
+  async function postData(form, endpoint, msgId) {
+    const data = Object.fromEntries(new FormData(form).entries());
+    if (data.year) data.year = parseInt(data.year);
+    if (data.students) {
+      data.students = data.students.split(',').map(s => s.trim()).filter(s => s);
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:5000/api/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+        },
+        body: JSON.stringify(data)
+      });
+      const result = await response.json();
+      const msg = document.getElementById(msgId);
+      if (response.ok) {
+        msg.style.color = 'green';
+        msg.textContent = '✅ Added successfully!';
+        form.reset();
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = '❌ ' + (result.message || 'Error occurred');
+      }
+    } catch (error) {
+      const msg = document.getElementById(msgId);
+      msg.style.color = 'red';
+      msg.textContent = '❌ Network error: ' + error.message;
+    }
+  }
+
+  // Handle signup
+  document.querySelector('#signupForm form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/signup', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      const msg = document.getElementById('signupMsg');
+      if (res.ok) {
+        msg.style.color = 'green';
+        msg.textContent = 'Signup successful! You can now login.';
+        form.reset();
+        showLogin();
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = result.message || 'Signup failed.';
+      }
+    } catch (err) {
+      const msg = document.getElementById('signupMsg');
+      msg.style.color = 'red';
+      msg.textContent = 'Network error: ' + err.message;
+    }
+  });
+
+  // Handle login
+  document.querySelector('#loginForm form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    try {
+      const res = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      const msg = document.getElementById('loginMsg');
+      if (res.ok && result.token) {
+        localStorage.setItem('token', result.token);
+        msg.style.color = 'green';
+        msg.textContent = 'Login successful!';
+        form.reset();
+        showDashboard();
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = result.message || 'Login failed.';
+      }
+    } catch (err) {
+      const msg = document.getElementById('loginMsg');
+      msg.style.color = 'red';
+      msg.textContent = 'Network error: ' + err.message;
+    }
+  });
+
+  // Handle adding Class
+  document.getElementById('classForm').addEventListener('submit', e => {
+    e.preventDefault();
+    postData(e.target, 'classes', 'classMsg');
+  });
+
+  // Handle adding Student
+  document.getElementById('studentForm').addEventListener('submit', e => {
+    e.preventDefault();
+    postData(e.target, 'students', 'studentMsg');
+  });
+
+  // Handle adding Teacher
+  document.getElementById('teacherForm').addEventListener('submit', e => {
+    e.preventDefault();
+    postData(e.target, 'teachers', 'teacherMsg');
+  });
+
+</script>
+
+</body>
+</html>

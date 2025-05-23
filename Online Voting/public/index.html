@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Online Voting System</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      padding: 40px 20px;
+      color: #333;
+    }
+    .wrapper {
+      max-width: 420px;
+      margin: 0 auto 60px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      padding: 30px 35px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-weight: 700;
+      color: #2a2a72;
+      letter-spacing: 1px;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      margin-bottom: 28px;
+      user-select: none;
+    }
+    nav button {
+      background: transparent;
+      border: none;
+      font-weight: 600;
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+      padding-bottom: 6px;
+      border-bottom: 2px solid transparent;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    nav button.active, nav button:hover {
+      color: #2a2a72;
+      border-color: #2a2a72;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      margin-top: 14px;
+      font-size: 15px;
+      color: #555;
+    }
+    input, select {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1.6px solid #bbb;
+      outline-offset: 2px;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus {
+      border-color: #2a2a72;
+    }
+    button.submit-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 14px;
+      background-color: #2a2a72;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 17px;
+      letter-spacing: 0.04em;
+      transition: background-color 0.3s ease;
+    }
+    button.submit-btn:hover {
+      background-color: #4545b8;
+    }
+    #logoutBtn {
+      background-color: #d9534f;
+      margin: 25px auto 40px;
+      display: block;
+      max-width: 160px;
+    }
+    .message {
+      text-align: center;
+      margin-top: 16px;
+      font-weight: 600;
+      font-size: 14px;
+      min-height: 22px;
+    }
+    #dashboard {
+      max-width: 600px;
+      margin: 0 auto;
+      display: none;
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 25px 30px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+      margin-bottom: 30px;
+    }
+    .card h2 {
+      margin-bottom: 20px;
+      color: #2a2a72;
+      font-weight: 700;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <h1>Online Voting System</h1>
+  <nav>
+    <button id="navLogin" class="active">Sign In</button>
+    <button id="navSignup">Register</button>
+  </nav>
+
+  <!-- Login Form -->
+  <form id="loginForm" autocomplete="off">
+    <label for="loginEmail">Email Address</label>
+    <input type="email" id="loginEmail" name="email" placeholder="you@example.com" required />
+
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword" name="password" placeholder="Enter password" required />
+
+    <button type="submit" class="submit-btn">Log In</button>
+    <div class="message" id="loginMsg"></div>
+  </form>
+
+  <!-- Signup Form -->
+  <form id="signupForm" autocomplete="off" style="display:none;">
+    <label for="signupName">Full Name</label>
+    <input type="text" id="signupName" name="name" placeholder="John Doe" required />
+
+    <label for="signupEmail">Email Address</label>
+    <input type="email" id="signupEmail" name="email" placeholder="you@example.com" required />
+
+    <label for="signupPassword">Create Password</label>
+    <input type="password" id="signupPassword" name="password" placeholder="Minimum 6 characters" required />
+
+    <button type="submit" class="submit-btn">Register</button>
+    <div class="message" id="signupMsg"></div>
+  </form>
+</div>
+
+<!-- Dashboard Section -->
+<div id="dashboard">
+  <button id="logoutBtn">Logout</button>
+
+  <div class="card">
+    <h2>Cast Your Vote</h2>
+    <form id="voteForm" autocomplete="off">
+      <label for="candidateSelect">Choose Candidate</label>
+      <select id="candidateSelect" name="candidate" required>
+        <option value="" disabled selected>-- Select Candidate --</option>
+      </select>
+      <button type="submit" class="submit-btn">Submit Vote</button>
+      <div class="message" id="voteMsg"></div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Add New Candidate</h2>
+    <form id="candidateForm" autocomplete="off">
+      <label for="candidateName">Candidate Name</label>
+      <input type="text" id="candidateName" name="name" placeholder="Full name" required />
+
+      <label for="candidateParty">Party Affiliation</label>
+      <input type="text" id="candidateParty" name="party" placeholder="Party or Independent" required />
+
+      <button type="submit" class="submit-btn">Add Candidate</button>
+      <div class="message" id="candidateMsg"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  const navLogin = document.getElementById('navLogin');
+  const navSignup = document.getElementById('navSignup');
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const dashboard = document.getElementById('dashboard');
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  function activateNavButton(button) {
+    navLogin.classList.remove('active');
+    navSignup.classList.remove('active');
+    button.classList.add('active');
+  }
+
+  navLogin.addEventListener('click', () => {
+    activateNavButton(navLogin);
+    loginForm.style.display = 'block';
+    signupForm.style.display = 'none';
+    dashboard.style.display = 'none';
+  });
+
+  navSignup.addEventListener('click', () => {
+    activateNavButton(navSignup);
+    signupForm.style.display = 'block';
+    loginForm.style.display = 'none';
+    dashboard.style.display = 'none';
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    activateNavButton(navLogin);
+    loginForm.style.display = 'block';
+    signupForm.style.display = 'none';
+    dashboard.style.display = 'none';
+  });
+
+  if (localStorage.getItem('token')) {
+    showDashboard();
+  } else {
+    activateNavButton(navLogin);
+    loginForm.style.display = 'block';
+  }
+
+  async function showDashboard() {
+    loginForm.style.display = 'none';
+    signupForm.style.display = 'none';
+    dashboard.style.display = 'block';
+    await loadCandidates();
+  }
+
+  async function postData(form, endpoint, msgId) {
+    const data = Object.fromEntries(new FormData(form).entries());
+    const msg = document.getElementById(msgId);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`http://localhost:3000/api/${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: 'Bearer ' + token } : {})
+        },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        msg.style.color = 'green';
+        msg.textContent = '✔️ Success!';
+        form.reset();
+        if (endpoint === 'vote') {
+          await loadCandidates();
+        }
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = result.message || 'An error occurred';
+      }
+    } catch (err) {
+      msg.style.color = 'red';
+      msg.textContent = 'Network error: ' + err.message;
+    }
+  }
+
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(signupForm).entries());
+    const msg = document.getElementById('signupMsg');
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (res.ok) {
+        msg.style.color = 'green';
+        msg.textContent = 'Registration successful! Please sign in.';
+        signupForm.reset();
+        activateNavButton(navLogin);
+        signupForm.style.display = 'none';
+        loginForm.style.display = 'block';
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = result.message || 'Registration failed.';
+      }
+    } catch (err) {
+      msg.style.color = 'red';
+      msg.textContent = 'Network error: ' + err.message;
+    }
+  });
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(loginForm).entries());
+    const msg = document.getElementById('loginMsg');
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (res.ok && result.token) {
+        localStorage.setItem('token', result.token);
+        msg.style.color = 'green';
+        msg.textContent = 'Welcome back!';
+        loginForm.reset();
+        await showDashboard();
+      } else {
+        msg.style.color = 'red';
+        msg.textContent = result.message || 'Login failed.';
+      }
+    } catch (err) {
+      msg.style.color = 'red';
+      msg.textContent = 'Network error: ' + err.message;
+    }
+  });
+
+  document.getElementById('voteForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    postData(e.target, 'vote', 'voteMsg');
+  });
+
+  document.getElementById('candidateForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    postData(e.target, 'candidates/add', 'candidateMsg');
+  });
+
+  async function loadCandidates() {
+    const select = document.getElementById('candidateSelect');
+    select.innerHTML = '<option value="" disabled selected>-- Select Candidate --</option>';
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch('http://localhost:3000/api/candidates', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (res.ok) {
+        const candidates = await res.json();
+        candidates.forEach(candidate => {
+          const option = document.createElement('option');
+          option.value = candidate._id || candidate.id;
+          option.textContent = `${candidate.name} (${candidate.party})`;
+          select.appendChild(option);
+        });
+      } else {
+        console.error('Failed to load candidates');
+      }
+    } catch (err) {
+      console.error('Error loading candidates:', err.message);
+    }
+  }
+</script>
+
+</body>
+</html>
