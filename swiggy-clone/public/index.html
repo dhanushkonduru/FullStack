@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>🍽️ Swiggy Clone - Food Delivery</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Navigation -->
+    <header class="app-header">
+      <div class="header-content">
+        <div class="logo">
+          <span class="logo-icon">🍽️</span>
+          <span class="logo-text">Swiggy Clone</span>
+        </div>
+        <nav class="nav">
+          <button id="nav-home" class="nav-btn active">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+          </button>
+          <button id="nav-cart" class="nav-btn">
+            <span class="nav-icon">🛒</span>
+            <span>Cart</span>
+            <span id="cart-count" class="cart-badge">0</span>
+          </button>
+          <div id="auth-section" class="auth-buttons">
+            <button id="btn-login" class="btn-secondary">Login</button>
+            <button id="btn-register" class="btn-primary">Sign Up</button>
+          </div>
+          <div id="user-section" class="user-info hidden">
+            <div class="user-avatar">
+              <span id="user-initial">U</span>
+            </div>
+            <div class="user-details">
+              <span id="user-name" class="user-name">User</span>
+              <button id="btn-logout" class="logout-btn">Logout</button>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Hero Section -->
+      <section id="hero" class="hero-section">
+        <div class="hero-content">
+          <h1 class="hero-title">Craving something delicious?</h1>
+          <p class="hero-subtitle">Order from your favorite restaurants and get it delivered to your doorstep</p>
+          <div class="hero-actions">
+            <button id="hero-order-btn" class="btn-hero">Order Now</button>
+            <button id="hero-browse-btn" class="btn-hero-outline">Browse Restaurants</button>
+          </div>
+        </div>
+        <div class="hero-image">
+          <div class="food-illustration">🍕🍔🍜</div>
+        </div>
+      </section>
+
+      <!-- Restaurants Section -->
+      <section id="restaurants" class="section">
+        <div class="section-header">
+          <h2>Popular Restaurants</h2>
+          <p>Discover amazing food from top-rated restaurants</p>
+        </div>
+        <div class="restaurants-grid" id="restaurants-grid"></div>
+      </section>
+
+      <!-- Menu Section -->
+      <section id="menu" class="section hidden">
+        <div class="section-header">
+          <button id="back-to-restaurants" class="back-btn">← Back to Restaurants</button>
+          <h2 id="restaurant-name">Restaurant Menu</h2>
+        </div>
+        <div class="menu-grid" id="menu-grid"></div>
+      </section>
+
+      <!-- Cart Section -->
+      <section id="cart" class="section hidden">
+        <div class="section-header">
+          <h2>Your Cart</h2>
+          <p>Review your order before checkout</p>
+        </div>
+        <div class="cart-content">
+          <div class="cart-items" id="cart-items"></div>
+          <div class="cart-summary">
+            <div class="cart-total">
+              <span>Total: ₹<span id="cart-total">0</span></span>
+            </div>
+            <button id="btn-place-order" class="btn-checkout">Place Order</button>
+          </div>
+        </div>
+        <div id="order-status" class="order-status"></div>
+      </section>
+
+      <!-- Auth Section -->
+      <section id="auth" class="auth-section hidden">
+        <div class="auth-container">
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login">Login</button>
+            <button class="auth-tab" data-tab="register">Register</button>
+          </div>
+          
+          <div class="auth-form" id="login-form">
+            <h3>Welcome Back</h3>
+            <p>Sign in to your account</p>
+            <div class="form-group">
+              <input id="login-email" type="email" placeholder="Email address" required />
+            </div>
+            <div class="form-group">
+              <input id="login-password" type="password" placeholder="Password" required />
+            </div>
+            <button id="login-submit" class="btn-auth">Sign In</button>
+            <div id="login-error" class="error-message"></div>
+          </div>
+
+          <div class="auth-form hidden" id="register-form">
+            <h3>Create Account</h3>
+            <p>Join us and start ordering</p>
+            <div class="form-group">
+              <input id="reg-name" type="text" placeholder="Full name" required />
+            </div>
+            <div class="form-group">
+              <input id="reg-email" type="email" placeholder="Email address" required />
+            </div>
+            <div class="form-group">
+              <input id="reg-password" type="password" placeholder="Password" required />
+            </div>
+            <button id="reg-submit" class="btn-auth">Create Account</button>
+            <div id="reg-error" class="error-message"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Toast Notifications -->
+    <div id="toast" class="toast hidden"></div>
+    
+    <!-- Loading Spinner -->
+    <div id="spinner" class="spinner hidden">
+      <div class="spinner-content">
+        <div class="spinner-icon">🍽️</div>
+        <p>Loading delicious food...</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <p>Made with ❤️ and a big appetite</p>
+        <p>© 2024 Swiggy Clone. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
+
+
